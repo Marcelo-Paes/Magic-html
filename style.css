@@ -1,0 +1,53 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f2f2;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#card-name {
+    width: 60%;
+    padding: 10px;
+    margin: 10px auto;
+    display: block;
+}
+
+button {
+    display: block;
+    margin: 10px auto;
+    background-color: #007BFF;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#search-result {
+    margin: 20px auto;
+    background-color: #fff;
+    padding: 20px;
+    width: 60%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+#search-result h2 {
+    font-size: 24px;
+}
+
+#search-result p {
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+#search-result img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+}

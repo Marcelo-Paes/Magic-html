@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Add Deck</title>
+</head>
+<body>
+    <h1>Add Deck</h1>
+    <form id="add-deck-form">
+        <input type="text" id="deck-name" placeholder="Enter deck name">
+        <textarea id="deck-list" placeholder="Enter deck list"></textarea>
+        <button type="submit">Add Deck</button>
+    </form>
+    <div id="deck-result">
+        <!-- O resultado do deck será exibido aqui -->
+    </div>
+
+    <script>
+        document.getElementById("add-deck-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+            const deckName = document.getElementById("deck-name").value;
+            const deckList = document.getElementById("deck-list").value;
+            addDeck(deckName, deckList);
+        });
+
+        function addDeck(deckName, deckList) {
+            // Faça uma solicitação AJAX para a rota de adição de deck do Flask
+            fetch("/add_deck", {
+                method: "POST",
+                body: JSON.stringify({ deck_name: deckName, deck_list: deckList }),
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Atualize a interface com os resultados do deck
+                    const resultContainer = document.getElementById("deck-result");
+                    // Adicione mais informações conforme necessário
+                })
+                .catch(error => {
+                    console.error("Erro na solicitação:", error);
+                });
+        }
+    </script>
+</body>
+</html>

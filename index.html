@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Deck Builder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .card-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .card {
+            width: 250px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            margin: 10px;
+            padding: 10px;
+            position: relative;
+            text-align: center;
+        }
+
+        .card img {
+            max-width: 100%;
+            display: block;
+            margin: 0 auto 10px;
+        }
+
+        .card-name {
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #deckFormats {
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Deck Builder</h1>
+    <select id="formatFilter">
+        <option value="all">Mostrar todos os formatos</option>
+        <option value="standard">Standard</option>
+        <option value="modern">Modern</option>
+        <option value="legacy">Legacy</option>
+        <option value="vintage">Vintage</option>
+        <option value="commander">Commander</option>
+        <option value="pauper">Pauper</option>
+        <option value="pioneer">Pioneer</option>
+        <option value="historic">Historic</option>
+    </select>
+    <textarea id="cardNameInput" rows="5" placeholder="Digite o nome da carta (uma por linha)"></textarea>
+    <button onclick="searchCards()">Adicionar Cartas</button>
+    <div id="cardList" class="card-container"></div>
+    <div id="deckFormats"></div>
+
+    <script>
+        const formatsToShow = ['standard', 'modern', 'legacy', 'vintage', 'commander', 'pauper', 'pioneer', 'historic'];
+        const cardList = {};
+
+        formatsToShow.forEach(format => {
+            cardList[format] = {
+                count: 0,
+                cards: []
+            };
+        });
+
+        function searchCards() {
+            const cardNames = document.getElementById('cardNameInput').value.split('\n').map(name => name.trim());
+            
+            if (cardNames.length === 0) {
+                return;
+            }
+
+            Promise.all(cardNames.map(cardName => fetch(`https://api.scryfall.com/cards/named?fuzzy=${cardName}`)
+                .then(response => response.json())
+                .then(data => {
+                    const card = {
+                        name: data.name,
+                        value: data.prices.usd || 1,
+                        formats: data.legalities,
+                        imageUrl: data.image_uris.normal
+                    };
+
+                    cardList[formatsToShow[0]].cards.push(card);
+
+                    for (const format in card.formats) {
+                        if (formatsToShow.includes(format) && card.formats[format] === 'legal') {
+                            cardList[format].count++;
+                        }
+                    }
+                })
+                .catch(error => console.error(error)))
+            )
+            .then(() => {
+                updateCardList();
+            });
+        }
+
+        function updateCardList() {
+            const cardListContainer = document.getElementById('cardList');
+            const formatFilter = document.getElementById('formatFilter');
+            const selectedFormat = formatFilter.value;
+
+            cardListContainer.innerHTML = '';
+
+            formatsToShow.forEach(format => {
+                const formatCardList = cardList[format];
+
+                if (formatCardList.count > 0) {
+                    formatCardList.cards.forEach(card => {
+                        if (selectedFormat === 'all' || card.formats[selectedFormat] === 'legal') {
+                            const cardElement = document.createElement('div');
+                            cardElement.className = 'card';
+                            cardElement.innerHTML = `
+                                <p class="card-name"><strong>Nome:</strong> ${card.name}</p>
+                                <img src="${card.imageUrl}" alt="${card.name}">
+                                <p><strong>Valor:</strong> $${card.value}</p>
+                                <p><strong>Formatos:</strong> ${Object.keys(card.formats).join(', ')}</p>
+                            `;
+
+                            cardListContainer.appendChild(cardElement);
+                        }
+                    });
+                }
+            });
+
+            updateDeckFormats();
+        }
+
+        function updateDeckFormats() {
+            const deckFormatsContainer = document.getElementById('deckFormats');
+
+            deckFormatsContainer.innerHTML = `
+                <h2>Formatos em que o deck pode ser jogado:</h2>
+                <ul>
+                    ${formatsToShow.map(format => `<li>${format}: ${cardList[format].count}</li>`).join('')}
+                </ul>
+            `;
+        }
+
+        // Adicione um ouvinte de evento para o filtro
+        document.getElementById('formatFilter').addEventListener('change', () => {
+            updateCardList();
+        });
+    </script>
+</body>
+</html>
