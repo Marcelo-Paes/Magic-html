@@ -4,111 +4,175 @@
     <title>Deck Builder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f0f0;
-        }
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+.title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
 
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+.input-container {
+    max-width: 550px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-        h1 {
-            text-align: center;
-        }
+.select,  .button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.textarea{
+    width: 96%;
+}
+.button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
 
-        .card-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+.button:hover {
+    background-color: #0056b3;
+}
+.container {
+    max-width: 390px;
+    margin: 0 auto;
+    padding: 20px;
+}
 
-        .card {
-            width: 250px;
-            background-color: #fff;
-            border: 1px solid #ccc;
-            margin: 10px;
-            padding: 10px;
-            position: relative;
-            text-align: center;
-        }
+h1 {
+    text-align: center;
+    font-size: 20px;
+}
 
-        .card img {
-            max-width: 100%;
-            display: block;
-            margin: 0 auto 10px;
-        }
+.card-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
 
-        .card-name {
-            cursor: pointer;
-            font-weight: bold;
-        }
+.card {
+        width: 250px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        margin: 10px;
+        padding: 10px;
+        position: relative;
+        text-align: center;
+    }
 
-        select, textarea, button {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
+.card img {
+    max-width: 100%;
+    display: block;
+    margin: 0 auto 20px; /* Aumente o espaço inferior para dar mais destaque à imagem */
+}
 
-        button {
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
+.card-name {
+    cursor: pointer;
+    font-weight: bold;
+}
 
-        button:hover {
-            background-color: #0056b3;
-        }
+select, textarea, button {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
 
-        #deckFormats {
-            text-align: center;
-            margin-top: 20px;
-        }
+button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#deckFormats {
+    text-align: center;
+    margin-top: 20px;
+}
+
+#deckFormats h2 {
+    font-size: 18px;
+    color: #007bff;
+}
+
+#deckFormats ul {
+    list-style: none;
+    padding: 0;
+}
+
+#deckFormats li {
+    font-size: 16px;
+    margin: 5px 0;
+}
+
+#deckFormats li:before {
+    content: '\2022';
+    color: #007bff;
+    display: inline-block;
+    width: 1em;
+    margin-left: -1em;
+}
     </style>
+    
 </head>
 <body>
-    <h1>Deck Builder</h1>
-    <select id="formatFilter">
-        <option value="all">Mostrar todos os formatos</option>
-        <option value="standard">Standard</option>
-        <option value="modern">Modern</option>
-        <option value="legacy">Legacy</option>
-        <option value="vintage">Vintage</option>
-        <option value="commander">Commander</option>
-        <option value="pauper">Pauper</option>
-        <option value="pioneer">Pioneer</option>
-        <option value="historic">Historic</option>
-    </select>
-    <textarea id="cardNameInput" rows="5" placeholder="Digite o nome da carta (uma por linha)"></textarea>
-    <button onclick="searchCards()">Adicionar Cartas</button>
+    <h1 class="title">Deck Builder</h1>
+    <div class="input-container">
+        <select id="formatFilter" class="select">
+            <option value="all">Mostrar todos os formatos</option>
+            <option value="standard">Standard</option>
+            <option value="modern">Modern</option>
+            <option value="legacy">Legacy</option>
+            <option value="vintage">Vintage</option>
+            <option value="commander">Commander</option>
+            <option value="pauper">Pauper</option>
+            <option value="pioneer">Pioneer</option>
+            <option value="historic">Historic</option>
+        </select>
+        <textarea id="cardNameInput" class="textarea" rows="5" placeholder="Digite o nome da carta (uma por linha)"></textarea>
+        <button onclick="searchCards()" class="button">Adicionar Cartas</button>
+        <button onclick="clearCardList()" class="button">Limpar Lista</button> <!-- Botão para limpar a lista -->
+    </div>
     <div id="cardList" class="card-container"></div>
     <div id="deckFormats"></div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
     <script>
         const formatsToShow = ['standard', 'modern', 'legacy', 'vintage', 'commander', 'pauper', 'pioneer', 'historic'];
         const cardList = {};
-
+    
         formatsToShow.forEach(format => {
             cardList[format] = {
                 count: 0,
                 cards: []
             };
         });
-
+    
         function searchCards() {
-            const cardNames = document.getElementById('cardNameInput').value.split('\n').map(name => name.trim());
-            
+            const cardNames = document.querySelector('.textarea').value.split('\n').map(name => name.trim());
+    
             if (cardNames.length === 0) {
                 return;
             }
-
+    
             Promise.all(cardNames.map(cardName => fetch(`https://api.scryfall.com/cards/named?fuzzy=${cardName}`)
                 .then(response => response.json())
                 .then(data => {
@@ -118,12 +182,15 @@
                         formats: data.legalities,
                         imageUrl: data.image_uris.normal
                     };
-
-                    cardList[formatsToShow[0]].cards.push(card);
-
-                    for (const format in card.formats) {
-                        if (formatsToShow.includes(format) && card.formats[format] === 'legal') {
-                            cardList[format].count++;
+    
+                    if (!isCardAlreadyAdded(card)) {
+                        cardList[formatsToShow[0]].cards.push(card);
+                        updateDeckFormats();
+    
+                        for (const format in card.formats) {
+                            if (formatsToShow.includes(format) && card.formats[format] === 'legal') {
+                                cardList[format].count++;
+                            }
                         }
                     }
                 })
@@ -133,13 +200,47 @@
                 updateCardList();
             });
         }
+    
+        function isCardAlreadyAdded(card) {
+            const cardName = card.name;
+            for (const format in cardList) {
+                const cardsInFormat = cardList[format].cards;
+                for (const existingCard of cardsInFormat) {
+                    if (existingCard.name === cardName) {
+                        showPopup(`A carta "${cardName}" já está na lista.`);
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    
+        function showPopup(message) {
+            Swal.fire({
+                title: 'Atenção',
+                text: message,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+        }
 
-        function updateCardList() {
-            const cardListContainer = document.getElementById('cardList');
-            const formatFilter = document.getElementById('formatFilter');
-            const selectedFormat = formatFilter.value;
+        // Função para exibir uma mensagem de pop-up
+        function showPopup(message) {
+            alert(message);
+        }
+        function clearCardList() {
+            for (const format in cardList) {
+                cardList[format].count = 0;
+                cardList[format].cards = [];
+            }
+            updateCardList();
+        }   
+            function updateCardList() {
+                const cardListContainer = document.querySelector('.card-container');
+                const formatFilter = document.querySelector('.select');
+                const selectedFormat = formatFilter.value;
 
-            cardListContainer.innerHTML = '';
+                cardListContainer.innerHTML = '';
 
             formatsToShow.forEach(format => {
                 const formatCardList = cardList[format];
@@ -153,7 +254,7 @@
                                 <p class="card-name"><strong>Nome:</strong> ${card.name}</p>
                                 <img src="${card.imageUrl}" alt="${card.name}">
                                 <p><strong>Valor:</strong> $${card.value}</p>
-                                <p><strong>Formatos:</strong> ${Object.keys(card.formats).join(', ')}</p>
+                                
                             `;
 
                             cardListContainer.appendChild(cardElement);
@@ -177,9 +278,9 @@
         }
 
         // Adicione um ouvinte de evento para o filtro
-        document.getElementById('formatFilter').addEventListener('change', () => {
-            updateCardList();
-        });
+        document.querySelector('.select').addEventListener('change', () => {
+    updateCardList();
+});
     </script>
 </body>
 </html>
