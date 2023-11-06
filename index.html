@@ -7,7 +7,12 @@
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background-image: url('bg2.jpg'); /* Substitua 'caminho-para-sua-imagem.jpg' pelo caminho da sua imagem */
+    background-size: cover; /* Para ajustar a imagem para cobrir todo o fundo */
+    background-repeat: no-repeat; /* Para impedir a repetição da imagem */
+    background-color: rgba(255, 255, 255, 0.7);
+    background-attachment: fixed; /* Mantém o fundo fixo */
+    
 }
 
 .title {
@@ -68,8 +73,8 @@ h1 {
 
 .card {
     width: 250px;
-    background-color: #fff;
-    border: 1px solid #ccc;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #ae3333;
     margin: 10px;
     padding: 10px;
     position: relative;
@@ -113,18 +118,25 @@ button:hover {
 }
 
 #deckFormats h2 {
-    font-size: 18px;
-    color: #007bff;
+    font-size: 24px;
+    color: #ffffff;
 }
 
 #deckFormats ul {
     list-style: none;
     padding: 0;
+    align-items: center;
 }
 
 #deckFormats li {
-    font-size: 16px;
+    font-size: 18px;
     margin: 5px 0;
+    background-color: rgba(255, 255, 255, 0.7);
+    border: 1px solid #ae3333;
+    max-width: 10%;
+    text-align: center; /* Centraliza os elementos filhos horizontalmente */
+    margin-top: 20px;
+    margin-left: 45%;
 }
 
 #deckFormats li:before {
@@ -136,56 +148,100 @@ button:hover {
 }
 
 /* Estilos para telas menores (responsivo para celular) */
-/* Estilos para telas menores (responsivo para celular) */
-/* Estilos para telas menores (responsivo para celular) */
 @media (max-width: 980px) {
     .card-container {
         flex-direction: column;
     }
+    body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-image: url('bgcel.jpg'); /* Substitua 'caminho-para-sua-imagem.jpg' pelo caminho da sua imagem */
+    background-size: cover; /* Para ajustar a imagem para cobrir todo o fundo */
+    background-repeat: no-repeat; /* Para impedir a repetição da imagem */
+    background-color: rgba(255, 255, 255, 0.7);
+    background-attachment: fixed; /* Mantém o fundo fixo */
+    background-position: center; 
     
+}
+
     .card {
         width: 100%;
-    }
-    
-    .card p {
-        font-size: 18px; /* Aumenta o tamanho da fonte dos valores de preços */
-    }
-    .button {
-        margin-top:8px;
-        width: 50%; /* Define a largura para 50% para centralizar */
-        padding: 8px; /* Reduz o preenchimento para botões menores */
-        font-size: 20px; /* Aumenta o tamanho da fonte dos botões */
         
     }
 
+    .card p {
+        font-size: 18px;
+    }
+
+    .button {
+        margin-top: 8px;
+        width: 50%;
+        padding: 8px;
+        font-size: 30px;
+    }
 
     .card-name {
-        font-size: 28px; /* Aumenta o tamanho da fonte dos nomes das cartas */
+        font-size: 28px;
     }
-    .remove-button{
-        width: 30%; /* Define a largura para 50% para centralizar */
-        padding: 8px; /* Reduz o preenchimento para botões menores */
-        font-size: 20px; /* Aumenta o tamanho da fonte dos botões */
+
+    .remove-button {
+        width: 30%;
+        padding: 8px;
+        font-size: 20px;
     }
+
     .input-container {
-        text-align: center; /* Centraliza os botões da textarea */
+        text-align: center;
         display: flex;
         flex-direction: column;
         align-items: center;
     }
+
     #deckFormats h2 {
-    font-size: 34px; /* Aumenta o tamanho da fonte dos formatos jogados */
-    color: #007bff;
-    text-align: center; /* Centraliza o título h2 */
-}
+        font-size: 34px;
+        color: #007bff;
+        text-align: center;
+    }
+
     #deckFormats li {
-        font-size: 28px; /* Aumenta o tamanho da fonte dos nomes dos formatos e das quantidades */
+        font-size: 28px;
         margin: 5px 0;
     }
 
     #deckFormats ul {
-        text-align: center; /* Centraliza a lista de formatos e quantidades */
+        text-align: center;
     }
+
+    .textarea {
+        width: 100%; /* Define a largura da textarea para 100% */
+        font-size: 30px; /* Aumenta o tamanho da fonte da textarea */
+    }
+
+    .search-button {
+        margin-top: 8px;
+        width: 50%;
+        padding: 8px;
+        font-size: 30px;
+    }
+    .select {
+        width: 100%; /* Define a largura dos filtros para 100% */
+        font-size: 20px; /* Aumenta o tamanho da fonte dos filtros */
+    }
+    .input-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+.title {
+    text-align: center;
+    font-size: 54px;
+    margin-bottom: 20px;
+    color: #fff;
+}
 }
 
 
