@@ -190,7 +190,11 @@ button:hover {
         padding: 8px;
         font-size: 20px;
     }
-
+    .transform-button{
+        width: 30%;
+        padding: 8px;
+        font-size: 20px;
+    }
     .input-container {
         text-align: center;
         display: flex;
@@ -331,11 +335,20 @@ button:hover {
         fetch(`https://api.scryfall.com/cards/named?fuzzy=${cardName}`)
             .then(response => response.json())
             .then(data => {
+                let imageUrl = 'URL_PADRÃO_PARA_IMAGEM';
+
+                if (data.card_faces && data.card_faces[0].image_uris) {
+                    imageUrl = data.card_faces[0].image_uris.normal + `?t=${Date.now()}`;
+                } else if (data.image_uris) {
+                    imageUrl = data.image_uris.normal + `?t=${Date.now()}`;
+                }
+
                 const card = {
+                    id: generateCardId(), // Gerar um identificador único
                     name: data.name,
-                    type: data.type_line, // Correção: Extrai o tipo da carta da chave 'type_line'
+                    type: data.type_line,
                     formats: data.legalities,
-                    imageUrl: data.image_uris ? data.image_uris.normal : 'URL_PADRÃO_PARA_IMAGEM'
+                    imageUrl: imageUrl
                 };
 
                 if (!isCardAlreadyAdded(card)) {
@@ -351,10 +364,10 @@ button:hover {
             })
             .catch(error => {
                 console.error(error);
-                // Se houver um erro ao buscar uma carta, ainda adicione-a com uma imagem padrão
                 const card = {
+                    id: generateCardId(),
                     name: cardName,
-                    type: 'Desconhecido', // Define o tipo como 'Desconhecido'
+                    type: 'Desconhecido',
                     formats: {},
                     imageUrl: 'URL_PADRÃO_PARA_IMAGEM'
                 };
@@ -368,10 +381,11 @@ button:hover {
 
     Promise.all(requests)
         .then(() => {
-            // Atualize a lista de cartas após o término de todas as solicitações.
             updateCardList();
         });
 }
+
+
 
 
         function isCardAlreadyAdded(card) {
@@ -409,69 +423,102 @@ button:hover {
             updateCardList();
         }   
         function updateCardList() {
-        const cardListContainer = document.querySelector('.card-container');
-        const formatFilter = document.querySelector('#formatFilter');
-        const selectedFormat = formatFilter.value;
-        const typeFilter = document.querySelector('#typeFilter');
-        const selectedType = typeFilter.value;
+            const cardListContainer = document.querySelector('.card-container');
+            const formatFilter = document.querySelector('#formatFilter');
+            const selectedFormat = formatFilter.value;
+            const typeFilter = document.querySelector('#typeFilter');
+            const selectedType = typeFilter.value;
 
-        cardListContainer.innerHTML = '';
+            cardListContainer.innerHTML = '';
 
-        const creatureRegex = /Criatura/i; // Expressão regular para "Criatura"
+            const creatureRegex = /Criatura/i;
 
-        formatsToShow.forEach(format => {
-            const formatCardList = cardList[format];
+            formatsToShow.forEach(format => {
+                const formatCardList = cardList[format];
 
-            if (formatCardList.count > 0) {
-                formatCardList.cards.forEach((card, index) => {
-                    const cardType = card.type || ''; // Certifique-se de lidar com cartas sem tipo
-                    if (
-                        (selectedFormat === 'all' || card.formats[selectedFormat] === 'legal') &&
-                        (selectedType === 'all' || 
-                            (selectedType === 'creature' && creatureRegex.test(cardType.toLowerCase())) || // Correspondência para "Criatura"
-                            (selectedType !== 'creature' && new RegExp(selectedType, 'i').test(cardType.toLowerCase())) // Outros tipos
-                        )
-                    ) {
-                        const cardElement = document.createElement('div');
-                        cardElement.className = 'card';
-                        cardElement.innerHTML = `
-                            <p class="card-name"><strong>Nome:</strong> ${card.name}</p>
-                            <p class="card-type"><strong>Tipo:</strong> ${cardType}</p>
-                            <img src="${card.imageUrl}" alt="${card.name}">
-                            <button class="remove-button" onclick="removeCard(${index}, '${format}')">Remover</button>
-                        `;
+                if (formatCardList.count > 0) {
+                    formatCardList.cards.forEach((card, index) => {
+                        const cardType = card.type || '';
+                        if (
+                            (selectedFormat === 'all' || card.formats[selectedFormat] === 'legal') &&
+                            (selectedType === 'all' ||
+                                (selectedType === 'creature' && creatureRegex.test(cardType.toLowerCase())) ||
+                                (selectedType !== 'creature' && new RegExp(selectedType, 'i').test(cardType.toLowerCase()))
+                            )
+                        ) {
+                            const cardElement = document.createElement('div');
+                            cardElement.className = 'card';
+                            cardElement.innerHTML = `
+                                <p class="card-name"><strong>Nome:</strong> ${card.name}</p>
+                                <p class="card-type"><strong>Tipo:</strong> ${cardType}</p>
+                                <img src="${card.imageUrl}" alt="${card.name}">
+                            `;
+                            if (card.card_faces && card.card_faces.length === 2) {
+                                // Se a carta tiver duas faces, adicione o botão de transformação
+                                cardElement.innerHTML += `
+                                    <button class="transform-button" onclick="transformCard(${index}, '${format}')">Transformar</button>
+                                `;
+                            }
+                            cardElement.innerHTML += `
+                            <button class="remove-button" data-name="${card.name}" onclick="removeCard('${card.name}')">Remover</button>
 
-                        cardListContainer.appendChild(cardElement);
-                    }
-                });
-            }
-        });
 
-        updateDeckFormats();
-    }
 
-    function removeCard(index, format) {
-        // Remova a carta da lista do formato selecionado
-        const removedCard = cardList[format].cards.splice(index, 1)[0];
 
-        if (cardList[format].count > 0) {
-            cardList[format].count--;
+
+
+
+
+                            `;
+                            cardListContainer.appendChild(cardElement);
+                        }
+                    });
+                }
+            });
+
+            updateDeckFormats();
         }
 
-        if (removedCard && removedCard.formats) {
-            for (const formatName in removedCard.formats) {
-                if (formatsToShow.includes(formatName) && removedCard.formats[formatName] === 'legal') {
-                    if (cardList[formatName].count > 0) {
-                        cardList[formatName].count--;
+        function transformCard(index, format) {
+            // Troque a face da carta
+            const card = cardList[format].cards[index];
+            if (card.card_faces && card.card_faces.length === 2) {
+                // Inverte o índice da face
+                const currentFaceIndex = card.card_faces.indexOf(card.currentFace);
+                card.currentFace = card.card_faces[currentFaceIndex === 0 ? 1 : 0];
+                updateCardList(); // Atualize a lista de cartas para refletir a transformação
+            }
+        }
+        function generateCardId() {
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+        function removeCard(cardName) {
+    for (const format in cardList) {
+        const cardsInFormat = cardList[format].cards;
+        const index = cardsInFormat.findIndex(card => card.name === cardName);
+
+        if (index !== -1) {
+            const removedCard = cardsInFormat.splice(index, 1)[0];
+
+            if (removedCard && removedCard.formats) {
+                for (const formatName in removedCard.formats) {
+                    if (formatsToShow.includes(formatName) && removedCard.formats[formatName] === 'legal') {
+                        if (cardList[formatName].count > 0) {
+                            cardList[formatName].count--;
+                        }
                     }
                 }
             }
         }
-
-        // Atualize a lista de cartas
-        updateCardList();
     }
-      
+
+    updateCardList();
+}
+
+
+
+
 
         function updateDeckFormats() {
             const deckFormatsContainer = document.getElementById('deckFormats');
@@ -502,12 +549,13 @@ button:hover {
     // Adicione um ouvinte de eventos ao elemento pai .card-container para lidar com remoções
     const cardListContainer = document.querySelector('.card-container');
     cardListContainer.addEventListener('click', (event) => {
-        if (event.target.classList.contains('remove-button')) {
-            const format = event.target.getAttribute('data-format');
-            const index = event.target.getAttribute('data-index');
-            removeCard(index, format);
-        }
-    });
+    if (event.target.classList.contains('remove-button')) {
+        const format = event.target.getAttribute('data-format');
+        const index = event.target.getAttribute('data-index');
+        removeCard(index, format);
+    }
+});
+    
 function clearCardList() {
     for (const format in cardList) {
         cardList[format].count = 0;
